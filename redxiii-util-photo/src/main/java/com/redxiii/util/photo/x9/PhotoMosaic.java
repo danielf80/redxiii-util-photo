@@ -6,7 +6,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,15 +20,15 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImageColorMapper implements Runnable {
+public class PhotoMosaic implements Runnable {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private final int COLORS_SAMPLES = 25;
-	private final int IMG_DECOMPOSITION = 50;	// = 10 x 10
+	private final int COLORS_SAMPLES = 15;
+	private final int IMG_DECOMPOSITION = 25;	// = 10 x 10
 	
 	public static void main(String[] args) {
-		new ImageColorMapper().run();
+		new PhotoMosaic().run();
 	}
 	
 	private static class Area {
@@ -48,8 +51,8 @@ public class ImageColorMapper implements Runnable {
 	
 	@Override
 	public void run() {
-		File fOrig = new File("/Users/df/Documents/Photos/2014/2014-09 - Europa/2014-09-10/TRIP-EUROPA-1403.JPG");
-		File fDest = new File("/Users/df/Downloads/TRIP-EUROPA-1403b.JPG");
+		File fOrig = new File("/Users/df/Documents/Photos/2013/2013-11-18 - Lua de Mel/A06 - Chichen Itza/Chichen Itza - 0032.JPG");
+		File fDest = new File("/Users/df/Downloads/Chichen Itza - 0032.JPG");
 		BufferedImage image;
 		try {
 			logger.info("Lendo imagem");
@@ -68,27 +71,44 @@ public class ImageColorMapper implements Runnable {
 		logger.info("Criando Graphics2D");
 		Graphics2D g = image.createGraphics();
 		
-		for (Area area : areas) {
-			logger.debug("Obtendo cores da area {}", area);
-			List<Color> colors = getColors(image, area);
-			
-			logger.debug("Calculando cor predominante");
-			Color color = getMainColor(colors);
-			
+		try {
+			Writer writer = new PrintWriter("photo.map.txt");
+			for (Area area : areas) {
+				logger.debug("Obtendo cores da area {}", area);
+				List<Color> colors = getColors(image, area);
+				
+				logger.debug("Calculando cor predominante");
+				Color color = getMainColor(colors);
+				
+				writer.append(area.toString());
+				writer.append("|");
+				writer.append(Integer.toHexString(color.getRGB()));
+				writer.append("\r\n");
+				writer.flush();
+				
 //			if (r.nextInt(5) == 1) {
 //				g.setComposite(alpha);
 //				g.drawImage(image, 
 //						area.xStart, area.yStart, area.xEnd, area.yEnd, 
 //						area.xStart, area.yStart, area.xEnd, area.yEnd, null);
 //			} else {
-				logger.debug("Desenhando area com a cor {}", Integer.toHexString(color.getRGB()));
-				g.setComposite(r.nextInt(5) == 1 ? alpha : nonAlpha);
-				g.setColor(color);
-				g.fill(new Rectangle(area.xStart, area.yStart, area.getWidth(), area.getHeight()));
+					logger.debug("Desenhando area com a cor {}", Integer.toHexString(color.getRGB()));
+					g.setComposite(r.nextInt(5) == 1 ? alpha : nonAlpha);
+					g.setColor(color);
+					g.fill(new Rectangle(area.xStart, area.yStart, area.getWidth(), area.getHeight()));
 //			}
-			
-			logger.debug("Area desenhada");
+//				logger.debug("Area desenhada");
+			}
+			writer.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
+		
 		logger.debug("Finalizando desenho");
 		g.dispose();
 		try {
@@ -105,7 +125,7 @@ public class ImageColorMapper implements Runnable {
 		int wStep = (int) (image.getWidth() / (float)parts);
 		int hStep = (int) (image.getHeight() / (float)parts);
 		
-		List<Area> areas = new ArrayList<ImageColorMapper.Area>();
+		List<Area> areas = new ArrayList<PhotoMosaic.Area>();
 		
 		Area area = null;
 		int x = 0, y = 0;
