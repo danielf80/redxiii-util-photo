@@ -41,9 +41,16 @@ public class LibraryPhotoColorMapper implements Runnable {
 			Writer writer = new PrintWriter("library.color.map.txt");
 			
 			logger.info("Listando fotos...");
+			int nPhotos = 0;
 			for (File fPhoto : FileUtils.listFiles(fDir, filter, TrueFileFilter.INSTANCE)) {
 				
 				if (fPhoto.getParentFile().getName().equals(".picasaoriginals")) 
+					continue;
+				
+				if (fPhoto.getParentFile().getName().equals("MISSING")) 
+					continue;
+				
+				if (fPhoto.getParentFile().getName().equals("ORIGINAL")) 
 					continue;
 				
 				logger.debug("Lendo foto {} / {}", fPhoto.getParentFile().getName(), fPhoto.getName());
@@ -56,8 +63,10 @@ public class LibraryPhotoColorMapper implements Runnable {
 				writer.append(Integer.toHexString(color.getRGB()));
 				writer.append("\r\n");
 				writer.flush();
+				nPhotos++;
 			}
 			writer.close();
+			logger.info("Mapeados {} fotos", nPhotos);
 		} catch (IOException e) {
 			logger.error("Falha ao criar mapa", e);
 		}

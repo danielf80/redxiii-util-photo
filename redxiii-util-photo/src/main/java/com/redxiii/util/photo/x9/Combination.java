@@ -39,7 +39,7 @@ public class Combination implements Runnable {
 				
 				String bestFile = null;
 				int bestMatch = 999999;
-				logger.debug("Procurando foto para a cor {}", color.toString());
+				logger.debug("Procurando foto para a cor {}", Integer.toHexString(color.getRGB()));
 				for (Entry<String, Color> entry : photosColor.entrySet()) {
 					Color pColor = entry.getValue();
 					int match = Math.abs(pColor.getRed() - color.getRed()) +
@@ -57,6 +57,8 @@ public class Combination implements Runnable {
 				writer.append(parts[2]);
 				writer.append("|");
 				writer.append(parts[3]);
+				writer.append("|");
+				writer.append(Integer.toHexString(color.getRGB()));
 				writer.append("|");
 				writer.append(bestFile);
 				writer.append("\r\n");

@@ -24,7 +24,7 @@ public class PhotoMosaic implements Runnable {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private final int COLORS_SAMPLES = 15;
+	private final int COLORS_SAMPLES = 100;
 	private final int IMG_DECOMPOSITION = 25;	// = 10 x 10
 	
 	public static void main(String[] args) {
@@ -51,8 +51,8 @@ public class PhotoMosaic implements Runnable {
 	
 	@Override
 	public void run() {
-		File fOrig = new File("/Users/df/Documents/Photos/2013/2013-11-18 - Lua de Mel/A06 - Chichen Itza/Chichen Itza - 0032.JPG");
-		File fDest = new File("/Users/df/Downloads/Chichen Itza - 0032.JPG");
+		File fOrig = new File("/Users/df/Documents/Photos/2015/2015-09 - Reino Unido/2015-08-31/TRIP-UK-0040.JPG");
+		File fDest = new File("/Users/df/Downloads/Framed.jpg");
 		BufferedImage image;
 		try {
 			logger.info("Lendo imagem");
@@ -93,7 +93,8 @@ public class PhotoMosaic implements Runnable {
 //						area.xStart, area.yStart, area.xEnd, area.yEnd, null);
 //			} else {
 					logger.debug("Desenhando area com a cor {}", Integer.toHexString(color.getRGB()));
-					g.setComposite(r.nextInt(5) == 1 ? alpha : nonAlpha);
+					g.setComposite(alpha);
+//					g.setComposite(r.nextInt(5) == 1 ? alpha : nonAlpha);
 					g.setColor(color);
 					g.fill(new Rectangle(area.xStart, area.yStart, area.getWidth(), area.getHeight()));
 //			}
