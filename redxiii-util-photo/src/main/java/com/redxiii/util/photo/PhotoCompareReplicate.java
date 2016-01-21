@@ -1,7 +1,9 @@
 package com.redxiii.util.photo;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -13,8 +15,11 @@ import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
@@ -36,13 +41,14 @@ public class PhotoCompareReplicate implements Runnable {
 	public void run() {
 		
 		File fDirPc = new File("/Users/df/Documents/Photos/2015/2015-09 - Reino Unido");
-		File fDirSd = 		new File("/Volumes/NO NAME/Album");
-		File fDirSdRep = 	new File("/Volumes/NO NAME/Repetidas");
-		File fDirOrd = 		new File("/Volumes/NO NAME/AlbumOrdenado");
-		//File fDirMis = 		new File("/Volumes/NO NAME/SemOrdem");
+		File fDirSd = 		new File("/Volumes/MYLINUXLIVE/Album");
+		File fDirSdRep = 	new File("/Volumes/MYLINUXLIVE/AlbumRep");
+		File fDirOrd = 		new File("/Volumes/MYLINUXLIVE/AlbumOrd");
+		File fDirNew = 		new File("/Volumes/MYLINUXLIVE/AlbumNew");
 		
 		logger.debug("Lendo photos do SD...");
-		Map<String, File> photosSd = getApagaRepetidas(fDirSd, fDirSdRep);
+//		Map<String, File> photosSd = getApagaRepetidas(fDirSd, fDirSdRep);
+		Map<String, File> photosSd = getMap(fDirSd);
 		
 		logger.debug("Lendo photos do PC...");
 		Map<String, File> photosPc = getMap(fDirPc);
@@ -54,10 +60,11 @@ public class PhotoCompareReplicate implements Runnable {
 		for (Entry<String, File> entry : photosSd.entrySet()) {
 			try {
 				if (photosPc.containsKey(entry.getKey())) {
-					File fPhotoPc = photosPc.get(entry.getKey());
-					FileUtils.copyFileToDirectory(fPhotoPc, fDirOrd);
+//					File fPhotoPc = photosPc.get(entry.getKey());
+//					FileUtils.copyFileToDirectory(fPhotoPc, fDirOrd);
 				} else {
-					//FileUtils.copyFileToDirectory(entry.getValue(), fDirMis);
+					logger.debug("Foto nao encontrada no PC: {}", entry.getValue());
+					FileUtils.copyFileToDirectory(entry.getValue(), fDirNew);
 				}
 			} catch (Exception e) {
 				logger.error("Falha ao mover photo");
@@ -115,7 +122,7 @@ public class PhotoCompareReplicate implements Runnable {
 	
 	private Map<String, File> getMap(File fDir) {
 		
-		Map<String, File> photosMap = new HashMap<String, File>();
+		Map<String, File> photosMap = new LinkedHashMap<String, File>();
 		
 		MessageDigest digest = null;
 		try {
@@ -129,13 +136,7 @@ public class PhotoCompareReplicate implements Runnable {
 		for (File fPhoto : FileUtils.listFiles(fDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
 			if (fPhoto.isFile() && fPhoto.getName().endsWith("JPG")) {
 				try {
-					Reader reader = new FileReader(fPhoto);
-					byte[] data = IOUtils.toByteArray(reader);
-					
-					digest.reset();
-					digest.update(data);
-					byte[] md5 = digest.digest();
-					String md5Hex = Hex.encodeHexString(md5);
+					String md5Hex = getMd5Hex(fPhoto);
 					
 					photosMap.put(md5Hex, fPhoto);
 					
@@ -149,6 +150,26 @@ public class PhotoCompareReplicate implements Runnable {
 		}
 		
 		return photosMap;
+	}
+	
+	private String getMd5Hex(File fOrig)
+			throws FileNotFoundException, IOException {
+		
+		MessageDigest digest = null;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e1) {
+			return null;
+		}
+		
+		BufferedImage image = ImageIO.read(fOrig);
+		for (int x = 0, y = 0; x < image.getWidth() && y < image.getHeight(); x++, y++) {
+			int rgb = image.getRGB(x, y);
+//			logger.debug("{}: {} = {}", fOrig.getName(), x, Integer.toHexString(rgb));
+			digest.update(Integer.toHexString(rgb).getBytes());
+		}
+		byte[] md5 = digest.digest();
+		return Hex.encodeHexString(md5);
 	}
 
 }

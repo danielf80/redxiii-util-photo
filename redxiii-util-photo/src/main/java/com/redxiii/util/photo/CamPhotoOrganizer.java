@@ -18,8 +18,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redxiii.util.cli.CmdLineIO;
-
 public class CamPhotoOrganizer implements Runnable {
 
 	private static SimpleDateFormat formatShortDate = new SimpleDateFormat("yyyy-MM");
@@ -31,7 +29,6 @@ public class CamPhotoOrganizer implements Runnable {
 	private static int minFilesPerFolder = 10;
 	private static int minDatesPerFolder = 3;
 	private static boolean changePhotoName;
-	private static CmdLineIO cmdLineIO = new CmdLineIO();
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -133,7 +130,7 @@ public class CamPhotoOrganizer implements Runnable {
 				List<File> files = map.get(date);
 				if (files.size() > minFilesPerFolder) {
 					
-					String subName = cmdLineIO.getString("Descricao p/ fotos do dia " + date + ":");
+					String subName = "";//cmdLineIO.getString("Descricao p/ fotos do dia " + date + ":");
 					
 					File fSubDir = new File(fDir, date + (subName != null ? (" - " + subName) : ""));
 					if (fSubDir.exists() || fSubDir.mkdir()) {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="true" />
+		<param name="Encoding" value="UTF-8" />
+		<param name="ImmediateFlush" value="true" />
+		<param name="File" value="photo.log" />
+		<param name="DatePattern" value=".yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"	value="%d{ISO8601}\t%5.5p\t%c{3}\t{%t}\t[%X{contexto}]\t%m%n" />
+		</layout>
+	</appender>
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Encoding" value="UTF-8" />
+		<param name="ImmediateFlush" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"	value="%d{yyyy-MM-dd HH:mm:ss} %5.5p \t{%t} \t%c{3} \t%m%n" />
+		</layout>
+	</appender>
+	<logger name="com.redxiii">
+		<level value="DEBUG" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<root>
+		<appender-ref ref="STDOUT" />
+	</root>
+</log4j:configuration>

@@ -2,18 +2,15 @@ package com.redxiii.util.photo;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
@@ -26,6 +23,7 @@ import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.ml.neuralnet.MapUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -46,7 +44,7 @@ public class PhotoOrganizer implements Runnable {
 	
 	private final boolean PRETEND = false;
 	private final boolean MOVE_VIDEOS = true;
-	private final boolean CREATE_DATED_FOLTERS = true;
+	private final boolean CREATE_DATED_FOLTERS = false;
 	private final boolean MOVE_SUBFOLDERS_IMGS = true;
 	
 	/**
@@ -59,8 +57,8 @@ public class PhotoOrganizer implements Runnable {
 	}
 	
 	public void run() {
-//		File fDir = new File("/Volumes/NO NAME/Album");
-		File fDir = new File("/Users/df/Documents/Photos/2014/2014-09 - Europa");
+		File fDir = new File("/Volumes/MYLINUXLIVE/Album");
+//		File fDir = new File("/Users/df/Documents/Photos/2014/2014-09 - Europa");
 		try {
 			verifyImage(fDir);
 		} catch (Exception e) {
@@ -86,7 +84,9 @@ public class PhotoOrganizer implements Runnable {
 		int count = 0;
 		
 		logger.info("Listando fotos...");
-		for (File fPhoto : FileUtils.listFiles(fDir, new SuffixFileFilter(new String[]{"jpg", "png"}, IOCase.INSENSITIVE), TrueFileFilter.INSTANCE)) {
+		Collection<File> fPhotos = FileUtils.listFiles(fDir, new SuffixFileFilter(new String[]{"jpg", "png"}, IOCase.INSENSITIVE), TrueFileFilter.INSTANCE);
+		logger.info("Encontradas {} arquivos. Organizando", fPhotos.size());
+		for (File fPhoto : fPhotos) {
 			
 			if (fPhoto.isDirectory())
 				continue;
@@ -179,7 +179,7 @@ public class PhotoOrganizer implements Runnable {
 			return photoDttm;
 		} catch (IllegalArgumentException e) {
 			if (metadata != null) {
-				MapUtils.verbosePrint(System.out, "Photo", metadata);
+//				MapUtils.verbosePrint(System.out, "Photo", metadata);
 			}
 		}
 		

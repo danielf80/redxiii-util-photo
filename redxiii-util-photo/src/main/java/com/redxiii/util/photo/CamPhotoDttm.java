@@ -7,14 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
@@ -26,12 +24,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redxiii.util.cli.CmdLineIO;
-
 public class CamPhotoDttm implements Runnable {
 
-	private static CmdLineIO cmdLineIO = new CmdLineIO();
-	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy:MM:dd HH:mm:ss");
 	
